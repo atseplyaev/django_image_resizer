@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1 class="my-4">Список изображений</h1>
+    {% if images %}
+        <ul class="list-group list-group-flush">
+            {% for image in images %}
+               <li class="list-group-item">
+                   <a href="{% url 'image-detail' image.id  %}">{{ image.image_name }}</a>
+               </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="lead">Нет доступных изображений</p>
+    {% endif %}
+    <a href="{% url 'upload'  %}">Добавить изображение</a>
+{% endblock %}

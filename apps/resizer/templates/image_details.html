@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+    <a href="{% url 'index' %}">Назад к списку</a>
+    <h1 class="my-4">{{ image.image_name }}</h1>
+    <form action="{% url 'image-detail' image.id %}" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <div class="alert alert-danger">
+                        {{ error|striptags }}
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+        <div class="form-group w-50">
+            <label for="{{ form.width.id_for_label }}">Ширина:</label>
+            {{ form.width }}
+        </div>
+        <div class="form-group w-50">
+            <label for="{{ form.height.id_for_label }}">Высота:</label>
+            <div class="custom-file mb-3">
+                {{ form.height }}
+            </div>
+            <button type="submit" class="btn btn-outline-dark" value="OK">Submit</button>
+        </div>
+    </form>
+    <div class="card">
+      <img src="{{ image.resized_image.url }}" class="card-img">
+    </div>
+{% endblock %}
