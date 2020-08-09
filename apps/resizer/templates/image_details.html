@@ -2,7 +2,7 @@
 {% block content %}
     <a href="{% url 'index' %}">Назад к списку</a>
     <h1 class="my-4">{{ image.image_name }}</h1>
-    <form action="{% url 'image-detail' image.id %}" enctype="multipart/form-data" method="post">
+    <form action="{% url 'image-detail' image.id %}" method="post">
         {% csrf_token %}
         {% if form.errors %}
             {% for field, errors in form.errors.items %}
@@ -14,6 +14,20 @@
                 {% endfor %}
             {% endfor %}
         {% endif %}
+        <div class="row">
+        <legend class="col-form-label col-sm-2 pt-0">Изменяемые размеры:</legend>
+        <div class="col-sm-10">
+            {% for radio in form.sizes %}
+                <div class="form-check">
+{#                  <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>#}
+                    {{ radio.tag }}
+                    <label class="form-check-label" for="{{ radio.id_for_label }}">
+                    {{ radio.choice_label }}
+                  </label>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
         <div class="form-group w-50">
             <label for="{{ form.width.id_for_label }}">Ширина:</label>
             {{ form.width }}
@@ -26,7 +40,34 @@
             <button type="submit" class="btn btn-outline-dark" value="OK">Submit</button>
         </div>
     </form>
-    <div class="card">
-      <img src="{{ image.resized_image.url }}" class="card-img">
+    <div class="row-cols-md-4">
+        <div class="card">
+            <img src="{{ image.resized_image.url }}" class="card-img">
+        </div>
     </div>
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        $('input:radio[class="form-check-input"]').change(
+            function(){
+                if (!$(this).is(':checked'))
+                    return;
+
+                switch ($(this).val()) {
+                    case 'ALL':
+                        $('#id_width').prop('disabled', false);
+                        $('#id_height').prop('disabled', false);
+                        break;
+                    case 'HEI':
+                        $('#id_width').prop('disabled', true);
+                        $('#id_height').prop('disabled', false);
+                        break;
+                    case 'WID':
+                        $('#id_width').prop('disabled', false);
+                        $('#id_height').prop('disabled', true);
+                        break;
+                }
+            });
+    </script>
 {% endblock %}
