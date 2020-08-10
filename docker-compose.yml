@@ -1,0 +1,32 @@
+version: '3'
+services: 
+    django:
+        restart: always
+        container_name: django_resize
+        volumes: 
+            - api_data:/code
+            - ./sock:/sock
+        build:
+            context: .
+            dockerfile: dockerfiles/docker_django.conf
+        command: bash -c 'python manage.py migrate; python manage.py collectstatic; mkdir -p /sock; chown www-data:www-data /sock && uwsgi --ini /etc/uwsgi/uwsgi.ini --wsgi-file /code/image_resizer/wsgi.py --uid root --gid root'
+
+    nginx:
+        restart: always
+        container_name: nginx_resize
+        volumes:
+            - api_data:/code
+            - ./sock:/sock
+            - ./log:/var/log/nginx
+        depends_on: 
+            - django
+        build: 
+            context: .
+            dockerfile: dockerfiles/docker_nginx.conf
+        ports:
+            - "80:80"
+volumes: 
+    api_data:
+        
+
+
